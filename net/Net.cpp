@@ -18,9 +18,10 @@ int main(int argc, char *argv[])
 	float scale = DEFAULT_SCALE;
 	int32_t step = DEFAULT_STEP;
 	int32_t radius = DEFAULT_RADIUS;
+	bool allEdges = false;
 	
 	int opt;
-	while((opt = getopt(argc, argv, "i:o:b:s:g:r:")) != -1) {
+	while((opt = getopt(argc, argv, "i:o:b:s:g:r:a")) != -1) {
 		switch (opt) {
 			case 'i':
 				strncpy(inPath, optarg, PATH_MAX);
@@ -40,6 +41,9 @@ int main(int argc, char *argv[])
 				break;
 			case 'r':
 				radius = atoi(optarg);
+				break;
+			case 'a':
+				allEdges = true;
 				break;
 			default:
 				fprintf(stderr, "Usage: %s -i input [-b bias] [-s scale] [-g step] [-r radius] [-o output]\n", argv[0]);
@@ -62,7 +66,10 @@ int main(int argc, char *argv[])
 	fclose(in);
 	
 	Fanout fanout;
-	forwardStar(&fanout, radius);
+	if(allEdges)
+		fullFanout(&fanout, radius);
+	else
+		forwardStar(&fanout, radius);
 	
 	FILE* out = fopen(outPath, "wt");
 	if(out==NULL) {

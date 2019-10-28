@@ -116,6 +116,19 @@ int32_t forwardStar(Fanout* f, int32_t r) {
 	return f->count;
 }
 
+int32_t fullFanout(Fanout* f, int32_t r) {
+	f->r = r;
+	f->e = (bool*) calloc((r+1)*(r+1), sizeof(bool));
+	for(int32_t j=0; j<=r; j++) {
+		for(int32_t i=0; i<=r; i++) {
+			f->sete(i, j, true);
+		}
+	}
+	f->sete(0, 0, false);
+	f->count = (2*r+1)*(2*r+1)-1;
+	return f->count;
+}
+
 void printFanout(FILE* out, Fanout* f) {
 	fprintf(out, "%d %d\n", f->r, f->count);
 	for(int32_t rj=0; rj<=f->r; rj++) {
