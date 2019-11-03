@@ -59,7 +59,11 @@ public class ShortestPath {
 				}
 			}
 		}
-		
+
+		return createSolution();
+	}
+	
+	protected Solution createSolution() {
 		Solution res = new Solution(net);
 		for(Node n : nodes) {
 			res.addNode(n.index, n.dist, n.parent==null ? -1 : n.parent.index);

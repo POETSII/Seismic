@@ -77,6 +77,14 @@ public class Solution {
 		}
 	}
 	
+	public double sum() {
+		double sum = 0;
+		for(Node n : nodes) {
+			sum += n.dist;
+		}
+		return sum;
+	}
+	
 	public BufferedImage render(BufferedImage srcImg, boolean all) {
 		BufferedImage img = new BufferedImage(srcImg.getWidth(), srcImg.getHeight(), BufferedImage.TYPE_INT_RGB);
 		Graphics2D g2 = img.createGraphics();
