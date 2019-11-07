@@ -13,7 +13,7 @@ public class SimPoetsPath extends ShortestPath {
 	}
 
 	@Override
-	public Solution calculate(int src) {
+	public SimPoetsPath calculate(int src) {
 		nodes[src].dist = 0;
 		LinkedList<Node> snodes = new LinkedList<>();
 		LinkedList<Edge> sedges = new LinkedList<>();
@@ -37,7 +37,7 @@ public class SimPoetsPath extends ShortestPath {
 			if(!changed)
 				break;
 		}
-		return createSolution();
+		return this;
 	}
 	
 	public static Random random = new Random();

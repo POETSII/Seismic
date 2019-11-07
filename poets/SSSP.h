@@ -2,8 +2,8 @@
 #ifndef _SSSP_H_
 #define _SSSP_H_
 
-#define POLITE_DUMP_STATS
-#define POLITE_COUNT_MSGS
+//#define POLITE_DUMP_STATS
+//#define POLITE_COUNT_MSGS
 
 #include <POLite.h>
 

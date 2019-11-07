@@ -25,18 +25,16 @@ public class ShortestPath {
 	
 	public ShortestPath(Net net) {
 		this.net = net;
-		nodes = new Node[net.w*net.h];
-		for(int j=0; j<net.h; j++)
-			for(int i=0; i<net.w; i++) {
-				int index = net.nodeIndex(i, j);
-				nodes[index] = new Node(index);
-			}
+		nodes = new Node[net.numNodes];
+		for(int i=0; i<net.numNodes; i++) {
+			nodes[i] = new Node(i);
+		}
 		for(Edge e : net.edges) {
 			nodes[e.src].edges.add(e);
 		}
 	}
 	
-	public Solution calculate(int src) {
+	public ShortestPath calculate(int src) {
 		nodes[src].dist = 0;
 		for(int count=0; count<nodes.length; count++) {
 			double min = -1;
@@ -60,11 +58,11 @@ public class ShortestPath {
 			}
 		}
 
-		return createSolution();
+		return this;
 	}
 	
-	protected Solution createSolution() {
-		Solution res = new Solution(net);
+	public Solution solution() {
+		Solution res = new Solution((GridNet)net);
 		for(Node n : nodes) {
 			res.addNode(n.index, n.dist, n.parent==null ? -1 : n.parent.index);
 		}

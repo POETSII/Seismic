@@ -25,7 +25,7 @@ int main(int argc, char**argv)
 	}
 	
 	int32_t w, h, step, totalEdges;
-	fscanf(in, "%d %d %d", &w, &h, &step);
+	assert(fscanf(in, "%d %d %d", &w, &h, &step)==3);
 	
 	// create graph
 	printf("Loading...\n");
@@ -39,16 +39,16 @@ int main(int argc, char**argv)
 	
 	// read fanout template
 	int32_t r, maxFanout, a;
-	fscanf(in, "%d %d", &r, &maxFanout);
+	assert(fscanf(in, "%d %d", &r, &maxFanout)==2);
 	int32_t** e = (int32_t**) calloc(r+1, sizeof(int32_t*));
 	for(int32_t ri=0; ri<=r; ri++) {
 		e[ri] = (int32_t*) calloc(r+1, sizeof(int32_t));
 		for(int32_t rj=0; rj<=r; rj++) {
-			fscanf(in, "%d", &e[ri][rj]);
+			assert(fscanf(in, "%d", &e[ri][rj])==1);
 		}
 	}
 	
-	fscanf(in, "%d", &totalEdges);
+	assert(fscanf(in, "%d", &totalEdges)==1);
 	printf("Nodes: %d\nEdges: %d\n", w*h, totalEdges);
 	
 	// read edge weights and create edges
@@ -64,9 +64,9 @@ int main(int argc, char**argv)
 							continue;
 						PDeviceId d = dj*w+di;
 						
-						float x = 1.0;
-						fscanf(in, "%f", &x);
-						graph.addLabelledEdge((int32_t)(x*1000), s, 0, d); // FIXME: Causes error for r>=3: corrupted size vs. prev_size
+						int32_t x = 1.0;
+						assert(fscanf(in, "%d", &x)==1);
+						graph.addLabelledEdge(x, s, 0, d);
 						totalEdges--;
 						
 						//printf("%d %d %.3f\n", s, d, x);
@@ -77,8 +77,6 @@ int main(int argc, char**argv)
 	fclose(in);
 	assert(totalEdges==0);
 	
-	return 1; // Temporary block. The error happens (if it happens) before that.
-
 	printf("Creating host link...\n");
 	HostLink hostLink;
 
@@ -120,6 +118,7 @@ int main(int argc, char**argv)
 	}
 	fprintf(out, "%d %d %d\n", w, h, step);*/
 
+	uint64_t sum = 0;
 	// Accumulate sum at each device
 	for(int32_t i = 0; i < graph.numDevices; i++) {
 		PMessage<int32_t, SSSPMessage> msg;
@@ -128,9 +127,11 @@ int main(int argc, char**argv)
 			// Stop timer
 			gettimeofday(&finishCompute, NULL);
 		}
-		float x = (float)msg.payload.dist / 1000.0;
-		printf("%d %d %f\n", msg.payload.node, msg.payload.from, x);
+		printf("%d %d %d\n", msg.payload.node, msg.payload.from, msg.payload.dist);
+		sum += msg.payload.dist;
 	}
+	
+	printf("sum = %lu\n", sum);
 
 	//fclose(out);
 

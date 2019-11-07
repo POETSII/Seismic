@@ -25,11 +25,11 @@ public class Solution {
 		}
 	}
 	
-	public final Net net;
+	public final GridNet net;
 	//public ArrayList<Node> nodes = new ArrayList<>();
 	public final Node[] nodes;
 	
-	public Solution(Net net) {
+	public Solution(GridNet net) {
 		this.net = net;
 		this.nodes = new Node[net.w*net.h];
 	}
@@ -112,14 +112,14 @@ public class Solution {
 		return render(srcImg, true);
 	}
 	
-	public static Solution read(Net net, String path) {
+	public static Solution read(GridNet net, String path) {
 		try {
 			Scanner in = new Scanner(new File(path));
 			int w = in.nextInt();
 			int h = in.nextInt();
 			int step = in.nextInt();
 			if(net==null)
-				net = new Net(w, h, step, null);
+				net = new GridNet(w, h, step, null);
 			Solution res = new Solution(net);
 			
 			int size = in.nextInt();
