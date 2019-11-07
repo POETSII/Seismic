@@ -64,7 +64,7 @@ int main(int argc, char**argv)
 							continue;
 						PDeviceId d = dj*w+di;
 						
-						int32_t x = 1.0;
+						int32_t x;
 						assert(fscanf(in, "%d", &x)==1);
 						graph.addLabelledEdge(x, s, 0, d);
 						totalEdges--;
