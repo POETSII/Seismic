@@ -141,5 +141,48 @@ public class Solution {
 	public static Solution read(String path) {
 		return read(null, path);
 	}
+	
+	public static Solution readOutput(GridNet net, String path) {
+		try {
+			Scanner in = new Scanner(new File(path));
+			net = new GridNet(net.w, net.h, net.step, null);
+			Solution res = new Solution(net);
+			int size = 0;
+			
+			while(in.hasNextLine()) {
+				String line = in.nextLine();
+				if(line.startsWith("Started"))
+					break;
+				else if(line.startsWith("Nodes:")) {
+					int nodes = Integer.parseInt(line.split("\\:\\s*", 2)[1]);
+					if(nodes!=net.numNodes) {
+						in.close();
+						throw new IOException("Num nodes mismatch");
+					}
+				}
+				else if(line.startsWith("Edges:")) {
+					size = Integer.parseInt(line.split("\\:\\s*", 2)[1]);
+				}
+			}
+			
+			if(size==0) {
+				in.close();
+				throw new IOException("No edge count?");
+			}
+			
+			for(int i=0; i<size; i++) {
+				int index = in.nextInt();
+				int parent = in.nextInt();
+				double dist = in.nextDouble();
+				res.addNode(index, dist, parent);
+			}
+
+			in.close();
+			return res;
+		} catch(IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 
 }
