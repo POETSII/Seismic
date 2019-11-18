@@ -47,11 +47,11 @@ public class GridNet extends Net {
 	}
 	
 	public double itox(int i) {
-		return i*step + step/2.0;
+		return i*step;// + step/2.0;
 	}
 
 	public double jtoy(int j) {
-		return j*step + step/2.0;
+		return j*step;// + step/2.0;
 	}
 	
 	public double nodeX(int index) {

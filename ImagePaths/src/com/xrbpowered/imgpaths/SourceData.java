@@ -17,13 +17,17 @@ public class SourceData {
 	
 	public double get(double x, double y) {
 		int x0 = (int)Math.floor(x);
+		int x1 = x0+1;
+		if(x1>=w) x1 = x0;
 		double sx = x-x0;
 		int y0 = (int)Math.floor(y);
+		int y1 = y0+1;
+		if(y1>=h) y1 = y0;
 		double sy = y-y0;
 		double d00 = d[x0][y0];
-		double d01 = d[x0][y0+1];
-		double d10 = d[x0+1][y0];
-		double d11 = d[x0+1][y0+1];
+		double d01 = d[x0][y1];
+		double d10 = d[x1][y0];
+		double d11 = d[x1][y1];
 		return lerp(lerp(d00, d01, sy), lerp(d10, d11, sy), sx);
 	}
 	

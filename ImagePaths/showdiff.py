@@ -19,13 +19,13 @@ def show(res, type):
 	ImagePaths.write(res, img, '../data/outputs/ints/%s_%s.png' % (name, type), False)
 
 
-root = net.nodeIndex(net.w/2, 2)
-res_pc = ShortestPath(net).calculate(root).solution()
-print('pc sum = %f' % res_pc.sum())
-show(res_pc, 'pc')
+#root = net.nodeIndex(net.w/2, 2)
+#res_pc = ShortestPath(net).calculate(root).solution()
+#print('pc sum = %f' % res_pc.sum())
+#show(res_pc, 'pc')
 
-res_hw = Solution.read(net, '../data/outputs/ints/%s_hwi.txt' % name)
+res_hw = Solution.readOutput(net, '../data/outputs/ints/%s_hwi_fix.txt' % name)
 print('hw sum = %f' % res_hw.sum())
-show(res_hw, 'hwi')
+show(res_hw, 'hwi_fix')
 
 print('Done')
