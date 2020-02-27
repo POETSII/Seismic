@@ -21,6 +21,25 @@ public class ForwardStar extends CustomFanout {
 			}
 		}
 		return count*8;
+		/*for(int x=r; x>=0; x--)
+			for(int y=r; y>=0; y--) {
+				e[x][y] = true;
+				for(int m=2; m<=r; m++)
+					if(x*m<=r && y*m<=r)
+						e[x*m][y*m] = false;
+			}
+		e[0][0] = false;
+		int count = 0;
+		for(int x=0; x<=r; x++)
+			for(int y=0; y<=r; y++) {
+				if(e[x][y]) {
+					int n = 4;
+					if(x==0) n >>= 1;
+					if(y==0) n >>= 1;
+					count += n;
+				}
+			}
+		return count;*/
 	}
 	
 	public static int[] primes = calcPrimes(30);

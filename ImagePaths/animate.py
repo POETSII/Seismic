@@ -20,11 +20,12 @@ print('Loaded')
 
 # max = 688755.000000
 
-step = 50000
+step = 10000
+span = 50000
 for t in range(0, 800000, step):
 	print(t)
 	for i in range(0, len(res.nodes)):
-		res.nodes[i].marked = res.nodes[i].dist<t and res.nodes[i].dist>=t-step
+		res.nodes[i].marked = res.nodes[i].dist<t and res.nodes[i].dist>=t-span
 	#for i in range(0, len(res.nodes)):
 	#	if(res.nodes[i].dist<t):
 	#		res.markPath(i)

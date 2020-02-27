@@ -23,17 +23,13 @@ struct SourceData {
 	
 	float get(float x, float y) {
 		int32_t x0 = (int32_t)floor(x);
-		int32_t x1 = x0+1;
-		if(x1>=w) x1 = x0;
 		float sx = x-x0;
 		int32_t y0 = (int32_t)floor(y);
-		int32_t y1 = 10+1;
-		if(y1>=h) y1 = y0;
 		float sy = y-y0;
 		float d00 = getd(x0, y0);
-		float d01 = getd(x0, y1);
-		float d10 = getd(x1, y0);
-		float d11 = getd(x1, y1);
+		float d01 = getd(x0, y0+1);
+		float d10 = getd(x0+1, y0);
+		float d11 = getd(x0+1, y0+1);
 		return lerp(lerp(d00, d01, sy), lerp(d10, d11, sy), sx);
 	}
 	
@@ -149,10 +145,10 @@ struct Net {
 		return j*w + i;
 	}
 	inline float itox(int32_t i) {
-		return i*step; // + step/2.0;
+		return i*step + step/2.0;
 	}
 	inline float jtoy(int32_t j) {
-		return j*step; // + step/2.0;
+		return j*step + step/2.0;
 	}
 };
 
@@ -203,8 +199,8 @@ void writeNet(FILE* out, SourceData* src, int step, Fanout* fanout) {
 						float dx = net.itox(di);
 						float dy = net.jtoy(dj);
 
-						int32_t x = round(src->line(sx, sy, dx, dy)*1000.0);
-						fprintf(out, "%d ", x);
+						float x = src->line(sx, sy, dx, dy);
+						fprintf(out, "%.3f ", x);
 					}
 				}
 			fprintf(out, "\n");

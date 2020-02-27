@@ -69,4 +69,11 @@ public class ShortestPath {
 		return res;
 	}
 	
+	public double sum() {
+		double s = 0;
+		for(Node n : nodes)
+			s += n.dist;
+		return s;
+	}
+	
 }
