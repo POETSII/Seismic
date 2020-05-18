@@ -199,8 +199,8 @@ void writeNet(FILE* out, SourceData* src, int step, Fanout* fanout) {
 						float dx = net.itox(di);
 						float dy = net.jtoy(dj);
 
-						float x = src->line(sx, sy, dx, dy);
-						fprintf(out, "%.3f ", x);
+						int32_t x = round(src->line(sx, sy, dx, dy)*1000.0);
+						fprintf(out, "%d ", x);
 					}
 				}
 			fprintf(out, "\n");

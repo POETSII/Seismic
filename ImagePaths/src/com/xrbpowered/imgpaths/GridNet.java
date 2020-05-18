@@ -7,6 +7,8 @@ import java.util.Scanner;
 
 public class GridNet extends Net {
 
+	public static double precision = 1000.0;
+	
 	public final int w, h, step;
 	public final Fanout fanout;
 	
@@ -81,7 +83,11 @@ public class GridNet extends Net {
 							int d = net.nodeIndex(di, dj);
 							double dx = net.itox(di);
 							double dy = net.jtoy(dj);
-							net.addEdge(s, d, src.line(sx, sy, dx, dy));
+							
+							double w = src.line(sx, sy, dx, dy);
+							w = (precision>0.0) ? Math.round(w*precision) : w;
+							
+							net.addEdge(s, d, w);
 						}
 					}
 			}

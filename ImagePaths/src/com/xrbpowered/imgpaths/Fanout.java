@@ -47,4 +47,27 @@ public abstract class Fanout {
 		}
 	}
 	
+	public static class Bresenham extends Fanout {
+		protected final int r;
+		
+		public Bresenham(int r) {
+			this.r = r;
+		}
+		
+		@Override
+		public int getRadius() {
+			return r;
+		}
+		
+		@Override
+		public int getMaxFanout() {
+			return (2*r+1)*6-10;
+		}
+		
+		@Override
+		public boolean hasEdge(int ri, int rj) {
+			return ri==1 || rj==1;
+		}
+	}
+	
 }

@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 public class SourceData {
 	
 	public static double lineStep = 1.0;
+	public static boolean fallback = false;
 
 	public final BufferedImage img;
 	public final int w, h;
@@ -45,7 +46,10 @@ public class SourceData {
 			double x = lerp(x0, x1, s);
 			double y = lerp(y0, y1, s);
 			double v = get(x, y);
-			sum += (prev+v)/2.0;
+			if(fallback)
+				sum += v;
+			else
+				sum += (prev+v)/2.0;
 			prev = v;
 		}
 		return sum * dist / (double)steps;
