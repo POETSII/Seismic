@@ -102,6 +102,23 @@ struct Fanout3D {
 	}
 };
 
+int32_t countFanout(Fanout3D* f) {
+	int32_t count = 0;
+	for(int32_t x=0; x<=f->r; x++)
+		for(int32_t y=0; y<=f->r; y++)
+			for(int32_t z=0; z<=f->r; z++) {
+				if(f->gete(x, y, z)) {
+					int32_t n = 8;
+					if(x==0) n >>= 1;
+					if(y==0) n >>= 1;
+					if(z==0) n >>= 1;
+					count += n;
+				}
+			}
+	f->count = count;
+	return count;
+}
+
 int32_t forwardStar3D(Fanout3D* f, int32_t r, bool spherical) {
 	f->r = r;
 	f->e = (bool*) calloc((r+1)*(r+1)*(r+1), sizeof(bool));
@@ -120,20 +137,21 @@ int32_t forwardStar3D(Fanout3D* f, int32_t r, bool spherical) {
 			}
 	f->sete(0, 0, 0, false);
 	
-	int32_t count = 0;
+	return countFanout(f);
+}
+
+int32_t bresenhamFanout3D(Fanout3D* f, int32_t r) {
+	f->r = r;
+	f->e = (bool*) calloc((r+1)*(r+1)*(r+1), sizeof(bool));
+
 	for(int32_t x=0; x<=r; x++)
 		for(int32_t y=0; y<=r; y++)
 			for(int32_t z=0; z<=r; z++) {
-				if(f->gete(x, y, z)) {
-					int32_t n = 8;
-					if(x==0) n >>= 1;
-					if(y==0) n >>= 1;
-					if(z==0) n >>= 1;
-					count += n;
-				}
+				f->sete(x, y, z, (x<2 && y<2) || (x<2 && z<2) || (y<2 && z<2));
 			}
-	f->count = count;
-	return count;
+	f->sete(0, 0, 0, false);
+	
+	return countFanout(f);
 }
 
 void printFanout(FILE* out, Fanout3D* f) {

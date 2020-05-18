@@ -67,7 +67,8 @@ int main(int argc, char *argv[])
 	printf("Source data loaded\n");
 	
 	Fanout3D fanout;
-	forwardStar3D(&fanout, radius, spherical);
+	//forwardStar3D(&fanout, radius, spherical);
+	bresenhamFanout3D(&fanout, radius);
 	printf("Fanout calculated\n");
 	
 	FILE* out = fopen(outPath, "wt");

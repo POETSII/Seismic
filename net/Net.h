@@ -5,47 +5,57 @@
 #include <stdio.h>
 #include <math.h>
 
-float lerp(float x0, float x1, float s) {
+#define PREC 1000.0
+#define LINE_STEP 1.0
+
+double lerp(double x0, double x1, double s) {
 	return x0 * (1.0-s) + x1 * s;
 }
 
 struct SourceData {
 	int32_t w, h;
-	float* d;
+	double* d;
 	
-	inline void setd(int x, int y, float v) {
+	inline void setd(int32_t x, int32_t y, double v) {
 		d[y*w+x] = v;
 	}
 
-	float getd(int x, int y) {
+	double getd(int32_t x, int32_t y) {
 		return d[y*w+x];
 	}
 	
-	float get(float x, float y) {
+	double get(double x, double y) {
 		int32_t x0 = (int32_t)floor(x);
-		float sx = x-x0;
+		int32_t x1 = x0+1;
+		if(x1>=w) x1 = x0;
+		double sx = x-x0;
 		int32_t y0 = (int32_t)floor(y);
-		float sy = y-y0;
-		float d00 = getd(x0, y0);
-		float d01 = getd(x0, y0+1);
-		float d10 = getd(x0+1, y0);
-		float d11 = getd(x0+1, y0+1);
+		int32_t y1 = y0+1;
+		if(y1>=h) y1 = y0;
+		double sy = y-y0;
+		double d00 = getd(x0, y0);
+		double d01 = getd(x0, y1);
+		double d10 = getd(x1, y0);
+		double d11 = getd(x1, y1);
 		return lerp(lerp(d00, d01, sy), lerp(d10, d11, sy), sx);
 	}
 	
-	float line(float x0, float y0, float x1, float y1) {
-		float dx = x1-x0;
-		float dy = y1-y0;
-		float dist = sqrt(dx*dx+dy*dy);
-		int32_t steps = (int32_t)(dist*2.0);
-		float sum = 0;
-		for(int32_t i=0; i<=steps; i++) {
-			float s = i / (float)steps;
-			float x = lerp(x0, x1, s);
-			float y = lerp(y0, y1, s);
-			sum += get(x, y);
+	double line(double x0, double y0, double x1, double y1) {
+		double dx = x1-x0;
+		double dy = y1-y0;
+		double dist = sqrt(dx*dx+dy*dy);
+		int32_t steps = (int32_t)(dist*LINE_STEP);
+		double sum = 0;
+		double prev = get(x0, y0);
+		for(int32_t i=1; i<=steps; i++) {
+			double s = (double)i / (double)steps;
+			double x = lerp(x0, x1, s);
+			double y = lerp(y0, y1, s);
+			double v = get(x, y);
+			sum += (prev+v)/2.0;
+			prev = v;
 		}
-		return (sum / (float)steps) * dist;
+		return sum * dist / (double)steps;
 	}
 };
 
@@ -59,10 +69,10 @@ int32_t readIntBE(FILE* in) {
 	return x;
 }
 
-void readSourceData(FILE* in, SourceData* src, float bias, float scale) {
+void readSourceData(FILE* in, SourceData* src, double bias, double scale) {
 	src->w = readIntBE(in);
 	src->h = readIntBE(in);
-	src->d = (float*) calloc(src->w*src->h, sizeof(float));
+	src->d = (double*) calloc(src->w*src->h, sizeof(double));
 	unsigned char rgb;
 	for(int32_t y=0; y<src->h; y++) {
 		for(int32_t x=0; x<src->w; x++) {
@@ -129,6 +139,23 @@ int32_t fullFanout(Fanout* f, int32_t r) {
 	return f->count;
 }
 
+int32_t bresenhamFanout(Fanout* f, int32_t r) {
+	if(r<2)
+		return fullFanout(f, r);
+	
+	f->r = r;
+	f->e = (bool*) calloc((r+1)*(r+1), sizeof(bool));
+
+	for(int32_t x=0; x<=r; x++)
+		for(int32_t y=0; y<=r; y++) {
+				f->sete(x, y, x==1 || y==1);
+			}
+	f->sete(0, 0, false);
+	
+	f->count = (2*r+1)*6-10;
+	return f->count;
+}
+
 void printFanout(FILE* out, Fanout* f) {
 	fprintf(out, "%d %d\n", f->r, f->count);
 	for(int32_t rj=0; rj<=f->r; rj++) {
@@ -144,10 +171,10 @@ struct Net {
 	inline int32_t nodeIndex(int32_t i, int32_t j) {
 		return j*w + i;
 	}
-	inline float itox(int32_t i) {
+	inline double itox(int32_t i) {
 		return i*step + step/2.0;
 	}
-	inline float jtoy(int32_t j) {
+	inline double jtoy(int32_t j) {
 		return j*step + step/2.0;
 	}
 };
@@ -186,8 +213,8 @@ void writeNet(FILE* out, SourceData* src, int step, Fanout* fanout) {
 	for(int32_t sj=0; sj<net.h; sj++) {
 		for(int32_t si=0; si<net.w; si++) {
 			int32_t s = net.nodeIndex(si, sj);
-			float sx = net.itox(si);
-			float sy = net.jtoy(sj);
+			double sx = net.itox(si);
+			double sy = net.jtoy(sj);
 			for(int32_t rj=-r; rj<=r; rj++)
 				for(int32_t ri=-r; ri<=r; ri++) {
 					if(fanout->gete(abs(ri), abs(rj))) {
@@ -196,10 +223,10 @@ void writeNet(FILE* out, SourceData* src, int step, Fanout* fanout) {
 						if(di<0 || dj<0 || di>=net.w || dj>=net.h)
 							continue;
 						int32_t d = net.nodeIndex(di, dj);
-						float dx = net.itox(di);
-						float dy = net.jtoy(dj);
+						double dx = net.itox(di);
+						double dy = net.jtoy(dj);
 
-						int32_t x = round(src->line(sx, sy, dx, dy)*1000.0);
+						int32_t x = round(src->line(sx, sy, dx, dy)*PREC);
 						fprintf(out, "%d ", x);
 					}
 				}
