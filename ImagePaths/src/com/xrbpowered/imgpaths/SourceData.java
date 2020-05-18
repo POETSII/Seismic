@@ -3,6 +3,8 @@ package com.xrbpowered.imgpaths;
 import java.awt.image.BufferedImage;
 
 public class SourceData {
+	
+	public static double lineStep = 1.0;
 
 	public final BufferedImage img;
 	public final int w, h;
@@ -35,15 +37,18 @@ public class SourceData {
 		double dx = x1-x0;
 		double dy = y1-y0;
 		double dist = Math.sqrt(dx*dx+dy*dy);
-		int steps = (int)(dist*2.0);
+		int steps = (int)(dist*lineStep);
 		double sum = 0;
-		for(int i=0; i<=steps; i++) {
+		double prev = get(x0, y0);
+		for(int i=1; i<=steps; i++) {
 			double s = i / (double)steps;
 			double x = lerp(x0, x1, s);
 			double y = lerp(y0, y1, s);
-			sum += get(x, y);
+			double v = get(x, y);
+			sum += (prev+v)/2.0;
+			prev = v;
 		}
-		return (sum / (double)steps) * dist;
+		return sum * dist / (double)steps;
 	}
 	
 	public static double lerp(double x0, double x1, double s) {
