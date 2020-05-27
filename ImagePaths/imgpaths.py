@@ -1,12 +1,13 @@
 import sys
 sys.path.append('imgpaths.jar')
 from com.xrbpowered.imgpaths import ImagePaths
+from com.xrbpowered.imgpaths import SourceData
 from com.xrbpowered.imgpaths import GridNet
 from com.xrbpowered.imgpaths import ForwardStar
 from com.xrbpowered.imgpaths import ShortestPath
 from com.xrbpowered.imgpaths import Solution
 from com.xrbpowered.imgpaths import Profile
-
+'''
 #img = ImagePaths.readImage('in3.png')
 #ImagePaths.writeImageBytes(img, 'in3.bin');
 
@@ -36,5 +37,23 @@ print('sum = %f' % res.sum())
 #img = ImagePaths.readImage('../data/img/in3.png')
 #ImagePaths.write(res, img, '../data/outputs/Loffs2r3_pc.png', False)
 res.write('../data/outputs/ints/L4r7_pc.txt', 0);
+'''
 
+gold = 0
+def run(file, g=False):
+	global gold
+	net = GridNet.read('../data/inputs/test_bres_py/%s.txt' % file)
+	root = net.nodeIndex(net.w/2, 2)
+	res = ShortestPath(net).calculate(root).solution()
+	sum = res.sum()
+	if(g):
+		gold = sum
+		err = 0
+	else:
+		err = (sum-gold) / gold
+	print('%s\t%d\t%.5f' % (file, sum, err))
+run('f3_G0', True)
+run('f3_fwds5')
+run('f3_fwds5_fb')
+	
 print('Done')

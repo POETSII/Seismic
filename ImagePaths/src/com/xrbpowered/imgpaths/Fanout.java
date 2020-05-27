@@ -1,12 +1,29 @@
 package com.xrbpowered.imgpaths;
 
 import java.io.PrintStream;
+import java.util.ArrayList;
 
 public abstract class Fanout {
 
 	public abstract int getRadius();
 	public abstract boolean hasEdge(int ri, int rj);
 	public abstract int getMaxFanout();
+	
+	public void printAngles() {
+		int r = getRadius();
+		ArrayList<Double> angles = new ArrayList<>();
+		for(int rj=0; rj<=r; rj++)
+			for(int ri=1; ri<=r; ri++) {
+				if(hasEdge(ri, rj)) {
+					double a = Math.atan2(rj, ri)*180.0/Math.PI;
+					if(!angles.contains(a))
+						angles.add(a);
+				}
+			}
+		angles.sort(null);
+		for(Double a : angles)
+			System.out.printf("%.2f\n", a);
+	}
 	
 	public void print(PrintStream out) {
 		int r = getRadius();
