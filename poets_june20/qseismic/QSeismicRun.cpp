@@ -7,6 +7,8 @@
 #include <sys/time.h>
 #include <config.h>
 
+#include "Mapping.h"
+
 int main(int argc, char**argv)
 {
 	if(argc != 2) {
@@ -71,7 +73,7 @@ int main(int argc, char**argv)
 	printf("Mapping...\n");
 	//graph.mapVerticesToDRAM = true;
 	//graph.mapEdgesToDRAM = true;
-	graph.map();
+	MAP(graph);
 
 	int32_t maxw = 0;
 	// read edge weights and create edges
