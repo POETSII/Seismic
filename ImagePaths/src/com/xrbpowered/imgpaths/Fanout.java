@@ -2,6 +2,7 @@ package com.xrbpowered.imgpaths;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.List;
 
 public abstract class Fanout {
 
@@ -9,7 +10,7 @@ public abstract class Fanout {
 	public abstract boolean hasEdge(int ri, int rj);
 	public abstract int getMaxFanout();
 	
-	public void printAngles() {
+	public List<Double> angles() {
 		int r = getRadius();
 		ArrayList<Double> angles = new ArrayList<>();
 		for(int rj=0; rj<=r; rj++)
@@ -21,10 +22,37 @@ public abstract class Fanout {
 				}
 			}
 		angles.sort(null);
-		for(Double a : angles)
+		return angles;
+	}
+	
+	public void printAngles() {
+		for(Double a : angles())
 			System.out.printf("%.2f\n", a);
 	}
 	
+	public List<Double> gaps() {
+		List<Double> angles = angles();
+		ArrayList<Double> gaps = new ArrayList<>();
+		for(int i=1; i<angles.size(); i++)
+			gaps.add(angles.get(i)-angles.get(i-1));
+		return gaps;
+	}
+	
+	public double meanGap() {
+		double sum = 0f;
+		List<Double> gaps = gaps();
+		for(Double a : gaps)
+			sum += a;
+		return sum/gaps.size();
+	}
+
+	public double maxGap() {
+		double max = 0f;
+		for(Double a : gaps())
+			if(a>max) max = a;
+		return max;
+	}
+
 	public void print(PrintStream out) {
 		int r = getRadius();
 		out.printf("%d %d\n", r, getMaxFanout());
