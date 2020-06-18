@@ -7,6 +7,7 @@ public class ForwardStar3D extends CustomFanout3D {
 	public ForwardStar3D(int r, boolean spherical) {
 		super(r);
 		this.spherical = spherical;
+		this.total = generate(r, e);
 	}
 
 	@Override
@@ -14,7 +15,7 @@ public class ForwardStar3D extends CustomFanout3D {
 		for(int x=0; x<=r; x++)
 			for(int y=0; y<=r; y++)
 				for(int z=0; z<=r; z++) {
-					e[x][y][z] = spherical ? Math.ceil(Math.sqrt(x*x+y*y+z*z))<=r : true;
+					e[x][y][z] = spherical ? (Math.ceil(Math.sqrt(x*x+y*y+z*z))<=r) : true;
 				}
 		for(int x=0; x<=r; x++)
 			for(int y=0; y<=r; y++)
@@ -38,5 +39,4 @@ public class ForwardStar3D extends CustomFanout3D {
 				}
 		return count;
 	}
-	
 }

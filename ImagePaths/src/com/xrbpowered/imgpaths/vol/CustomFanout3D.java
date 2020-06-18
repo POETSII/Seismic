@@ -5,10 +5,10 @@ import java.util.Scanner;
 
 public class CustomFanout3D extends Fanout3D {
 
-	private final int r;
+	protected final int r;
 
-	private int total;
-	private final boolean[][][] e;
+	protected int total;
+	protected final boolean[][][] e;
 
 	public CustomFanout3D(int r) {
 		this.r = r;
