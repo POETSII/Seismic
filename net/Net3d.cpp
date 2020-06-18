@@ -16,7 +16,9 @@ int main(int argc, char *argv[])
 	char outPath[PATH_MAX] = "out.txt";
 	float bias = DEFAULT_BIAS;
 	float scale = DEFAULT_SCALE;
-	int32_t step = DEFAULT_STEP;
+	int32_t stepx = DEFAULT_STEP;
+	int32_t stepy = DEFAULT_STEP;
+	int32_t stepz = DEFAULT_STEP;
 	int32_t radius = DEFAULT_RADIUS;
 	bool spherical = false;
 	
@@ -37,7 +39,12 @@ int main(int argc, char *argv[])
 				scale = atof(optarg);
 				break;
 			case 'g':
-				step = atoi(optarg);
+				stepx = optarg[0]-0x30;
+				if(stepx<1) stepx = 1;
+				stepy = optarg[1]-0x30;
+				if(stepy<1) stepy = 1;
+				stepz = optarg[2]-0x30;
+				if(stepz<1) stepz = 1;
 				break;
 			case 'r':
 				radius = atoi(optarg);
@@ -46,7 +53,7 @@ int main(int argc, char *argv[])
 				spherical = true;
 				break;
 			default:
-				fprintf(stderr, "Usage: %s -i input [-b bias] [-s scale] [-g step] [-r radius] [-o output]\n", argv[0]);
+				fprintf(stderr, "Usage: %s -i input [-b bias] [-s scale] [-g xyz] [-r radius] [-c] [-o output]\n", argv[0]);
 				exit(1);
 				break;
 		}
@@ -76,7 +83,7 @@ int main(int argc, char *argv[])
 		fprintf(stderr, "Can't write output to %s\n", outPath);
 		exit(1);
 	}
-	writeNet(out, &src, step, &fanout);
+	writeNet(out, &src, stepx, stepy, stepz, &fanout);
 	fclose(out);
 
 	return 0;

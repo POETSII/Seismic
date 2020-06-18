@@ -23,14 +23,14 @@ struct SourceData3D {
 	}
 	
 	float get(float x, float y, float z) {
-		int32_t x0 = (int32_t)floor(x);
-		int32_t x1 = (x0+1)%w;
+		int32_t x0 = (int32_t)floor(x) & (w-1);
+		int32_t x1 = (x0+1) & (w-1);
 		float sx = x-x0;
-		int32_t y0 = (int32_t)floor(y);
-		int32_t y1 = (y0+1)%l;
+		int32_t y0 = (int32_t)floor(y) & (l-1);
+		int32_t y1 = (y0+1) & (l-1);
 		float sy = y-y0;
-		int32_t z0 = (int32_t)floor(z);
-		int32_t z1 = (z0+1)%h;
+		int32_t z0 = (int32_t)floor(z) & (h-1);
+		int32_t z1 = (z0+1) & (h-1);
 		float sz = z-z0;
 		float d000 = getd(x0, y0, z0);
 		float d010 = getd(x0, y1, z0);
@@ -169,18 +169,18 @@ void printFanout(FILE* out, Fanout3D* f) {
 }
 
 struct Net3D {
-	int32_t w, l, h, step;
+	int32_t w, l, h, stepx, stepy, stepz;
 	inline int32_t nodeIndex(int32_t i, int32_t j, int32_t k) {
 		return (k*l+j)*w + i;
 	}
 	inline float itox(int32_t i) {
-		return i*step;
+		return i*stepx;
 	}
 	inline float jtoy(int32_t j) {
-		return j*step;
+		return j*stepy;
 	}
 	inline float ktoz(int32_t k) {
-		return k*step;
+		return k*stepz;
 	}
 };
 
@@ -213,14 +213,16 @@ void next(Progress* p) {
 	}
 }
 
-void writeNet(FILE* out, SourceData3D* src, int step, Fanout3D* fanout) {
+void writeNet(FILE* out, SourceData3D* src, int32_t stepx, int32_t stepy, int32_t stepz, Fanout3D* fanout) {
 	Net3D net;
-	net.w = src->w / step;
-	net.l = src->l / step;
-	net.h = src->h / step;
-	net.step = step;
+	net.w = src->w / stepx;
+	net.l = src->l / stepy;
+	net.h = src->h / stepz;
+	net.stepx = stepx;
+	net.stepy = stepy;
+	net.stepz = stepz;
 
-	fprintf(out, "T3.2 %d %d %d %d ", net.w, net.l, net.h, step);
+	fprintf(out, "T3.2 %d %d %d %d ", net.w, net.l, net.h, 0);
 	printFanout(out, fanout);
 	int32_t nodeCount = net.w*net.l*net.h;
 	int64_t edgeCountEst = (int64_t)fanout->count*(int64_t)nodeCount;
