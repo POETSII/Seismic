@@ -87,7 +87,8 @@ int main(int argc, char**argv)
 									assert(fscanf(in, "%d", &x)==1);
 									// printf("%d/%d %d/%d %d/%d R %d %d %d \n", si, w, sj, l, sk, h, ri, rj, rk);
 									if(di<w && dj<l && dk<h) {
-										graph.addLabelledEdge((int16_t)x, s, 0, d);
+										graph.addLabelledEdge(x, s, 0, d);
+										graph.addLabelledEdge(x, d, 0, s);
 										totalEdges++;
 									}
 								}
@@ -187,16 +188,16 @@ int main(int argc, char**argv)
 #endif
 
 	int32_t rootNode = 2*w+w/2; // TODO: source id from arg
-	for(int32_t j = 0; j < h; j++) {
-		for(int32_t i = 0; i < w; i++) {
-			int32_t node = j*w+i;
-			SSSPState* dev = &graph.devices[node]->state;
-			dev->node = node;
-			dev->isSource = (node==rootNode);
-			dev->parent = -1;
-			dev->dist = dev->isSource ? 0 : -1;
-		}
-	}
+	for(int32_t k = 0; k < h; k++)
+		for(int32_t j = 0; j < l; j++)
+			for(int32_t i = 0; i < w; i++) {
+				int32_t node = (k*l+j)*w+i;
+				SSSPState* dev = &graph.devices[node]->state;
+				dev->node = node;
+				dev->isSource = (node==rootNode);
+				dev->parent = -1;
+				dev->dist = dev->isSource ? 0 : -1;
+			}
 
 	// Write graph down to tinsel machine via HostLink
 	graph.write(&hostLink);
