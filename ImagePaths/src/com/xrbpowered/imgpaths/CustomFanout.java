@@ -1,5 +1,6 @@
 package com.xrbpowered.imgpaths;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;
 
@@ -47,6 +48,35 @@ public class CustomFanout extends Fanout {
 			}
 		fanout.total = total;
 		return fanout;
+	}
+
+	public static Fanout readList(String path, int r) {
+		try {
+			Scanner in = new Scanner(new File(path));
+			CustomFanout fanout = new CustomFanout(r);
+			
+			int total = in.nextInt();
+			int count = 0;
+			for(int i=0; i<total; i++) {
+				int x = in.nextInt();
+				int y = in.nextInt();
+				int z = in.nextInt();
+				if(x>=0 && y>=0 && z==0) {
+					fanout.e[x][y] = true;
+					count++;
+					if(x>0 && y>0)
+						count++;
+				}
+			}
+			
+			in.close();
+			fanout.total = count*2;
+			return fanout;
+		}
+		catch(IOException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
 }

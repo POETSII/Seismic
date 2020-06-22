@@ -1,5 +1,6 @@
 package com.xrbpowered.imgpaths.vol;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;
 
@@ -48,6 +49,31 @@ public class CustomFanout3D extends Fanout3D {
 				}
 		fanout.total = total;
 		return fanout;
+	}
+	
+	public static Fanout3D readList(String path, int r) {
+		try {
+			Scanner in = new Scanner(new File(path));
+			CustomFanout3D fanout = new CustomFanout3D(r);
+			
+			int total = in.nextInt();
+			for(int i=0; i<total; i++) {
+				int x = in.nextInt();
+				int y = in.nextInt();
+				int z = in.nextInt();
+				if(x>=0 && y>=0 && z>=0) {
+					fanout.e[x][y][z] = true;
+				}
+			}
+			
+			in.close();
+			fanout.total = total;
+			return fanout;
+		}
+		catch(IOException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
 }
